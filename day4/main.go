@@ -12,16 +12,17 @@ func main() {
 	fmt.Println(waves(matrix))
 }
 
-func errChecker(err error) {
+func errChecker(text string, err error) {
 	if err != nil {
+		fmt.Println(text)
 		panic(err)
 	}
 }
 
 // reads the input file
 func reader() [][]string {
-	file, err := os.Open(`C:\codingsh\github.com\RobynIsBlue\advent2024\day4\input1.txt`)
-	errChecker(err)
+	file, err := os.Open(`.\input1.txt`)
+	errChecker("error opening file", err)
 	defer file.Close()
 
 	var matrix [][]string
