@@ -1,9 +1,10 @@
-package main
+package backup
 
 import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -20,7 +21,7 @@ check each value as a key for other ma
 */
 
 func reader() {
-	file, err := os.Open(`.\test.txt`)
+	file, err := os.Open(`.\input.txt`)
 	if err != nil {
 		fmt.Println("couldn't open file")
 		return
@@ -40,7 +41,7 @@ func reader() {
 	count := 0
 	for scanner.Scan() {
 		line := scanner.Text()
-		count += ruleChecker(line, rulebook, false)
+		count += ruleChecker(line, rulebook)
 	}
 	fmt.Println(count)
 }
@@ -52,35 +53,21 @@ func ruleMaker(line string, rulebook map[int][]int) {
 	rulebook[num1] = append(rulebook[num1], num2)
 }
 
-func ruleChecker(line string, rulebook map[int][]int, bad bool) int {
+func ruleChecker(line string, rulebook map[int][]int) int {
 	nums := strings.Split(line, ",")
 	checkedNums := []int{}
-	for indFirstNum, strNum := range nums {
+	for _, strNum := range nums {
 		num, _ := strconv.Atoi(strNum)
 		if k, ok := rulebook[num]; ok {
 			for _, ruleNum := range k {
-				for indSliceNum, sliceNum := range checkedNums {
-					if sliceNum == ruleNum {
-						newList := swapInd(indFirstNum, indSliceNum, nums)
-						return ruleChecker(newList, rulebook, true)
-					}
+				if slices.Contains(checkedNums, ruleNum) {
+					return 0
 				}
 			}
 		}
 		checkedNums = append(checkedNums, num)
 	}
-	if bad {
-		return checkedNums[(len(checkedNums) / 2)]
-	}
-	return 0
-}
-
-func swapInd(i, j int, list []string) string {
-	val1 := list[i]
-	val2 := list[j]
-	list[i] = val2
-	list[j] = val1
-	return strings.Join(list, ",")
+	return checkedNums[(len(checkedNums) / 2)]
 }
 
 func main() {
